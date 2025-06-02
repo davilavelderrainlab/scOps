@@ -4,11 +4,8 @@
 
 ### scOps installation.
 
-scOps comes in both Python and R. Please select the language (and so the
-repository branch) that best suites your need, since the implementation
-is virtually identical. In both cases we use standard objects to store
-the representations, *AnnData* or a *SingleCellExperiment* object,
-respectively.
+scOps comes in both Python and R. The implementation is virtually identical. 
+Both implementations use standard objects to store the representations (*AnnData* or *SingleCellExperiment* object).
 
 ### scOps representations: BOGs, Signatures and Profiles.
 
@@ -21,18 +18,16 @@ and Signatures.
     respect to all the others.
 
 -   ***Signatures*** can be obtained via `scOps.compute.Signatures()`
-    (*Python*) or `computeSignatures()` (*R*); As the name suggests,
+    (*Python*) or `computeSignatures()` (*R*);
     this representation highlights the most distinctive features of each
     cell type/condition. Higher (lower) scores correspond to
     preferentially expressed (down regulated) features.
 
 -   ***Profiles*** can be obtained via `scOps.compute.Profiles()`
     (*Python*) or `computeProfiles()` (*R*); They represent the average
-    transcriptome of a given cell type/condition by averaging together
-    the counts for each gene.
+    transcriptome of a given cell type/condition.
 
 ### scOps maintenance.
 
-To this day scOps is maintained by Carlo and Erik. Please open an issue
-for any doubt, question, or bug you find using the package. Any feedback
-is always welcomed.
+scOps is maintained by Carlo and Erik. Please open an issue in case
+of questions or bugs. Any feedback is welcome.
