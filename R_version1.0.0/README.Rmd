@@ -1,5 +1,11 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
 ```{r, echo = FALSE, fig.align='center', out.width=300, out.height=300}
-knitr::include_graphics("/Users/carlo.manenti/OneDrive - Htechnopole/carlo/RESEARCH_PROJECTS/PACKAGES/package_scops/scOps.png")
+knitr::include_graphics("/Users/carlo.manenti/OneDrive - Htechnopole/carlo/RESEARCH_PROJECTS/PACKAGES/davilalab/scOps/scOps.png")
 ```
 
 ## A package for single-cell operational representations.
