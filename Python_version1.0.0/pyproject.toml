@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scops"
+version = "1.0.0"
+authors = [
+  {name = "Carlo Manenti", email = "carlomanenti99@gmail.com" },
+]
+maintainers = [
+    {name = "Carlo Manenti", email = "carlomanenti99@gmail.com"},
+]
+description = "Package for prototypical Operational Representations "
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "anndata",
+    "scanpy",
+    "numpy",
+    "pandas",
+    "scipy",
+]
+
+license = {file = "LICENSE"}
+
+[project.urls]
+Homepage = "https://gitlab.fht.org/davila/scops"
