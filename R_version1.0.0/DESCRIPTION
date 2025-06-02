@@ -1,0 +1,25 @@
+Package: scOps
+Title: Computes operational representations for Single Cell analyses
+Version: 1.0.0
+Authors@R: 
+    person("Erik", "Bot", , "erik.bot@fht.org", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0000-4304-6402"))
+Description: The package computes the profiles, signatures and BOGs (the operational
+  representations) given a SingleCellExperiment object. The object has to
+  contain a membership matrix or a membership vector, defining for each cell the
+  cluster(s) to which it belongs to. Refers to the article "Cell prototype 
+  learning and the challenge of single-cell omic analysis", DOI = ''.
+License: GPL-2
+Imports: Matrix, stats, SummarizedExperiment, presto, gtools,
+        SingleCellExperiment, methods, parallel
+Suggests: knitr, rmarkdown, BiocStyle, testthat (>= 3.0.0), magick
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr
+biocViews: Preprocessing, SingleCell, Clustering,
+Config/testthat/edition: 3
+NeedsCompilation: no
+Packaged: 2025-03-19 17:00:20 UTC; erik.bot
+Author: Erik Bot [aut, cre] (<https://orcid.org/0009-0000-4304-6402>)
+Maintainer: Erik Bot <erik.bot@fht.org>
