@@ -23,16 +23,13 @@
 computeSignatures <- function (sce,
                                profile_attr = 'P') {
 
-  profiles <- SummarizedExperiment::rowData(sce)[,profile_attr]
-  if (is.null(colnames(profiles))) {
-    colnames(profiles) <- paste0("Column-", seq_len(dim(profiles)[2]))
-  }
-  out <- do.call(cbind, lapply(seq(1, ncol(profiles)), function(i) {
-    diff_matrix <- profiles[, i] - profiles
-    return(Matrix::rowSums(diff_matrix))
-  }))
-  colnames(out) <- colnames(profiles)
-  SummarizedExperiment::rowData(sce)$S <- out
-  return(sce)
+        profiles <- SummarizedExperiment::rowData(sce)[,profile_attr]
+        if (is.null(colnames(profiles))) {
+            colnames(profiles) <- paste0("Column-", seq_len(dim(profiles)[2]))
+        }
+        out <- profiles - Matrix::rowMeans(profiles)
+        colnames(out) <- colnames(profiles)
+        SummarizedExperiment::rowData(sce)$S <- out
+        return(sce)
 
 }
