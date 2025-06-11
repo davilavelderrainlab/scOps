@@ -10,28 +10,31 @@ is virtually identical. In both cases we use standard objects to store
 the representations, *AnnData* or a *SingleCellExperiment* object,
 respectively.
 
-To install scOps for R please use `devtools::install()` specifying the
-branch with @ Or download the R_version1.0.0 folder and use
-`install.packages(path_to_R_version1.0.0, repos = NULL, type="source")`
+**R installation**
+
+`remotes::install_github("https://github.com/davilavelderrainlab/scOps/tree/main", subdir = "R_version1.0.0")`
+
+------------------------------------------------------------------------
 
 ### scOps representations: BOGs, Signatures and Profiles.
 
 scOps offers three main types of representations: Bag Of Genes, Profiles
 and Signatures.
 
--   ***Bag Of Genes*** **(BOGs)** can be obtained via `computeBOGs()`
-    (*R*); They are the differentially expressed genes of a cell
-    type/condition, with respect to all the others.
+- ***Bag Of Genes*** **(BOGs)** can be obtained via `computeBOGs()`
+  (*R*); They are the differentially expressed genes of a cell
+  type/condition, with respect to all the others.
 
--   ***Signatures*** can be obtained via `computeSignatures()` (*R*); As
-    the name suggests, this representation highlights the most
-    distinctive features of each cell type/condition. Higher (lower)
-    scores correspond to preferentially expressed (down regulated)
-    features.
+- ***Signatures*** can be obtained via `computeSignatures()` (*R*); As
+  the name suggests, this representation highlights the most distinctive
+  features of each cell type/condition. Higher (lower) scores correspond
+  to preferentially expressed (down regulated) features.
 
--   ***Profiles*** can be obtained via `computeProfiles()` (*R*); They
-    represent the average transcriptome of a given cell type/condition
-    by averaging together the counts for each gene.
+- ***Profiles*** can be obtained via `computeProfiles()` (*R*); They
+  represent the average transcriptome of a given cell type/condition by
+  averaging together the counts for each gene.
+
+------------------------------------------------------------------------
 
 ### scOps maintenance.
 

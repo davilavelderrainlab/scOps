@@ -10,30 +10,34 @@ is virtually identical. In both cases we use standard objects to store
 the representations, *AnnData* or a *SingleCellExperiment* object,
 respectively.
 
-To install scOps for R please use
-`pip install git+https:<.Python_version1.0.0.>` specifying the URL of
-Python_version1.0.0. Or download the Python_version1.0.0 folder and use
-`pip install .` after moving inside that folder.
+**Python installation**
+
+pip install
+git+<https://github.com/davilavelderrainlab/scOps.git#subdirectory=Python_version1.0.0>
+
+------------------------------------------------------------------------
 
 ### scOps representations: BOGs, Signatures and Profiles.
 
 scOps offers three main types of representations: Bag Of Genes, Profiles
 and Signatures.
 
--   ***Bag Of Genes*** **(BOGs)** can be obtained via
-    `scOps.compute.BOGs()` (*Python*); They are the differentially
-    expressed genes of a cell type/condition, with respect to all the
-    others.
+- ***Bag Of Genes*** **(BOGs)** can be obtained via
+  `scOps.compute.BOGs()` (*Python*); They are the differentially
+  expressed genes of a cell type/condition, with respect to all the
+  others.
 
--   ***Signatures*** can be obtained via `scOps.compute.Signatures()`
-    (*Python*); As the name suggests, this representation highlights the
-    most distinctive features of each cell type/condition. Higher
-    (lower) scores correspond to preferentially expressed (down
-    regulated) features.
+- ***Signatures*** can be obtained via `scOps.compute.Signatures()`
+  (*Python*); As the name suggests, this representation highlights the
+  most distinctive features of each cell type/condition. Higher (lower)
+  scores correspond to preferentially expressed (down regulated)
+  features.
 
--   ***Profiles*** can be obtained via `scOps.compute.Profiles()`
-    (*Python*); They represent the average transcriptome of a given cell
-    type/condition by averaging together the counts for each gene.
+- ***Profiles*** can be obtained via `scOps.compute.Profiles()`
+  (*Python*); They represent the average transcriptome of a given cell
+  type/condition by averaging together the counts for each gene.
+
+------------------------------------------------------------------------
 
 ### scOps maintenance.
 
