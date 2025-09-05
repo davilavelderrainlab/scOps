@@ -29,5 +29,8 @@ dependencies = [
 
 license = {file = "LICENSE"}
 
+[tool.poetry.dependencies]
+scOps = { git = "https://github.com/davilavelderrainlab/scOps.git", rev = "Python_version1.0.0" }
+
 [project.urls]
 Homepage = "https://gitlab.fht.org/davila/scops"
