@@ -2,7 +2,7 @@
 #'
 #' @param sce The SingleCellExperiment object or a matrix.
 #' @param group_attr The colData attribute in which to find the membership
-#' vector or membership matrix
+#' vector or membership matrix or a membership vector if a matrix is provided
 #' @param expM_attr The assays attribute in which to find the expression matrix
 #' to use. Defaults to 'logcounts'. If a matrix is passed, it will be ignored.
 #' @param na.rm A boolean variable to define if, in the mean, the NA should be
@@ -32,12 +32,13 @@ computeProfiles <- function (sce,
                              group_attr,
                              expM_attr = 'logcounts',
                              na.rm = TRUE) {
-
+    
     #TODO improve the code, by a mile #D4C
     
     # check for SCE or matrix 
     if(!is(sce, 'SingleCellExperiment')){
         M <- sce
+        group <- group_attr
         matrix_flag <- TRUE
         #TODO ADD A CHECK FOR MATRIX CLASS 
     } else {
@@ -46,47 +47,49 @@ computeProfiles <- function (sce,
     }
     
     if(is.vector(group)) {
-    # define multi-sample groups 
-    M_sub <- M[,which(group %in% names(table(group))[which(table(group) > 1)])]
-    # define single-sample groups
-    M_sub_comp <- as.matrix(M[,which(!group %in% names(table(group))[which(table(group) > 1)])])
-    
-    # only 1 single-sample group
-    if (dim(M_sub_comp)[2] == 1) {
-      colnames(M_sub_comp) <- names(table(group))[which(table(group) == 1)]
-    
-    # multiple single sample groups
-    } else {
-      colnames(M_sub_comp) <- group[match(colnames(M_sub_comp), colnames(M))]
-    }
-    
-    # extract multi-samples groups 
-    group_sub <- group[which(group %in% names(table(group))[which(table(group) > 1)])]
-    
-    # compute profiles by subgroup based on single- and multi- sample. 
-    out_sub <- do.call(cbind, lapply(split(seq_along(group_sub),
-                                           #D4C
-                                           group_sub), function(cols) {
-                                             if (length(cols) == 1) {
-                                               return(M_sub[, cols])
-                                             } else {
-                                               if (is.vector(M_sub)) {
-                                                 return(mean(M_sub[cols],
-                                                             na.rm = na.rm))
-                                               } else {
-                                                 return(Matrix::rowMeans(M_sub[,cols],
-                                                                         na.rm = na.rm))
-                                               }
-                                             }
-                                           }))
-    out <- cbind(M_sub_comp, out_sub)
-    out <- out[,unique(group)]
+        # define multi-sample groups 
+        M_sub <- M[,which(group %in% names(table(group))[which(table(group) > 1)])]
+        # define single-sample groups
+        M_sub_comp <- as.matrix(M[,which(!group %in% names(table(group))[which(table(group) > 1)])])
+        
+        # only 1 single-sample group
+        if (dim(M_sub_comp)[2] == 1) {
+            colnames(M_sub_comp) <- names(table(group))[which(table(group) == 1)]
+            
+            # multiple single sample groups
+        } else {
+            colnames(M_sub_comp) <- group[match(colnames(M_sub_comp), colnames(M))]
+        }
+        
+        # extract multi-samples groups 
+        group_sub <- group[which(group %in% names(table(group))[which(table(group) > 1)])]
+        
+        # compute profiles by subgroup based on single- and multi- sample. 
+        out_sub <- do.call(cbind, lapply(split(seq_along(group_sub),
+                                               #D4C
+                                               group_sub), function(cols) {
+                                                   if (length(cols) == 1) {
+                                                       return(M_sub[, cols])
+                                                   } else {
+                                                       if (is.vector(M_sub)) {
+                                                           return(mean(M_sub[cols],
+                                                                       na.rm = na.rm))
+                                                       } else {
+                                                           return(Matrix::rowMeans(M_sub[,cols],
+                                                                                   na.rm = na.rm))
+                                                       }
+                                                   }
+                                               }))
+        out <- cbind(M_sub_comp, out_sub)
+        # safety default to character
+        colnames(out) <- as.character(colnames(out))
+        out <- out[, as.character(unique(group))]
     }
     
     # weighted average
     if(is.matrix(group)) {
         if(dim(group)[1] == dim(sce)[1]) {
-          group <- t(group)}
+            group <- t(group)}
         group <- group/apply(group, 1, sum)
         weights_sum <- Matrix::colSums(group)
         out_mat <- base::`%*%`(M, group)
@@ -101,5 +104,5 @@ computeProfiles <- function (sce,
     }
     
     return(sce)
-
+    
 }

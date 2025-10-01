@@ -43,6 +43,7 @@ computeSignatures <- function (sce,
         # handle matrix output 
         if (matrix_flag){
             sce <- out
+        }
         else {
             SummarizedExperiment::rowData(sce)$S <- out
         }
