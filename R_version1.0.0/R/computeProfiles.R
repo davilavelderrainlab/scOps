@@ -44,6 +44,7 @@ computeProfiles <- function (sce,
     } else {
         group <- sce@colData[,group_attr]
         M <- SummarizedExperiment::assays(sce)[[expM_attr]]
+        matrix_flag <- FALSE
     }
     
     if(is.vector(group)) {
