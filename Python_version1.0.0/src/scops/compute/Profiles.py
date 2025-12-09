@@ -1,9 +1,10 @@
 from scipy.sparse import csr_matrix 
 import pandas as pd 
 import numpy as np
+from anndata import AnnData
 
 # package specific function
-from scops.helper._panda_in_var_ import _panda_in_var_
+
 
 def Profiles(adata, 
     group,
@@ -23,10 +24,12 @@ def Profiles(adata,
     Parameters
     ----------
     adata       
-        AnnData object: stores your data 
+        AnnData object or Matrix: stores your data or is the matrix to use. 
     group 
         str: .obs column or .obsms array, specifies the groups/representation
             used to group or weigth observations
+        list: that specifies the a membership of each sample
+        matrix: that specifies the contribution of each prototype. 
     layer
         str='logcounts': layer of adata.layer. specifies the counts used
             to compute profiles
@@ -52,13 +55,34 @@ def Profiles(adata,
     none
     """
     
-    # profiles (partition based prototypes)
-    if group in adata.obs.columns :
+    # check for matrix or anndata
+    is_anndata = isinstance(adata, AnnData)
 
-        # working on the layer 
+    # weighted profiles (Decomposition Based Groups)
+    prototypes = None
+    # on the anndata
+    if is_anndata and (group in adata.obsm) : 
         array = adata.layers[layer]
-        membership_vector = adata.obs[group]
+        prototypes = adata.obsm[group] 
+    # on the matrix
+    elif (not isinstance(group, str)) and group.ndim > 1 :
+        array = adata 
+        prototypes = group  
+    
+    # average profiles (Partition Based prototypes)
+    else :
+        if is_anndata :
+            if group in adata.obs.columns :
+                # working on the layer 
+                array = adata.layers[layer]
+                membership_vector = adata.obs[group]
+        # work on the matrix directly
+        else : 
+            array = adata 
+            membership_vector = group
 
+    # average profiles (Partition Based prototypes)
+    if prototypes is None :
         # horizontal split of the array
         counts_splits = {group_x : array[np.where(membership_vector == group_x)] for group_x in membership_vector.unique()}
 
@@ -67,22 +91,22 @@ def Profiles(adata,
         for group_i, counts in counts_splits.items() :
             # dense single layer conversion. 
             profiles[group_i] = np.array(counts.mean(axis = 0)).reshape(-1)
-            # profiles[group] = np.mean(counts)
 
         profiles = pd.DataFrame.from_dict(profiles)
-        profiles = profiles.set_index(adata.var_names) 
-
-    # weighted profiles (decomposition based prototypes)
-    elif group in adata.obsm : 
+    
+        # add gene names from the anndaya
+        if is_anndata :
+            profiles = profiles.set_index(adata.var_names) 
+    
+    # Weighted Profiles based on continous prototypes
+    if prototypes is not None:
         # scaling
         # scaling between 0 and 1 the contribution of each prototype to any given cell
-        prototypes = adata.obsm[group] 
         # matrix operation goes speed! 
         scaled_prototypes = prototypes.T @ np.diag(1 / prototypes.sum(axis = 1))
 
         # weight 
-        expression = adata.layers[layer]
-        weighted = csr_matrix(scaled_prototypes) @ expression # both sparse 
+        weighted = csr_matrix(scaled_prototypes) @ array # both sparse 
 
         # mean 
         # ugly rearranging due to 
@@ -92,21 +116,14 @@ def Profiles(adata,
         # proper formatting for Pandas DataFrame
         profiles = pd.DataFrame.sparse.from_spmatrix(weighted_profiles.T)
         profiles.columns = [str(profile) for profile in profiles.columns]
-        profiles.index = adata.var_names
-
-    else : 
-        raise(ValueError('please specify a field in .obs or .obsm'))
+        
+        if is_anndata :
+            profiles.index = adata.var_names
 
     # directly return the pandas Data Frame 
-    if return_panda : 
+    if return_panda or (not is_anndata): 
         return(profiles)
 
-    # storing in the anndata  
-
-    # deprecated
-    # description: Results are stored in .var; one column for each representation/group.  
-    #adata = _panda_in_var_(adata, profiles, field_name = field_name, group_names = group_names)
-            
-    adata.varm[field_name] = profiles
-
-    return(adata)
+    else : 
+        adata.varm[field_name] = profiles
+        return(adata)

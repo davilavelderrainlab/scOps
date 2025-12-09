@@ -1,14 +1,10 @@
-from scops.helper._panda_in_var_ import _panda_in_var_
-from scops.helper.GetRepresentation import GetRepresentation
+from anndata import AnnData
 
-
-# signatures 
-# from profiles 
 def Signatures(adata,
     profile_field="Profiles",
     field_name='Signatures',
     return_panda=False) :
-     """Computes Signatures from Profiles
+    """Computes Signatures from Profiles
 
     A signature is the summed pair-wise differences of a profile vs all the 
     others. 
@@ -19,7 +15,7 @@ def Signatures(adata,
     Parameters
     ----------
     adata       
-        AnnData object: stores your data 
+        AnnData object: stores your data or a matrix of Profiles
     profile_field 
         str"Profiles": field of adata.varm used to store profiles
     field_name
@@ -46,7 +42,13 @@ def Signatures(adata,
     """
     
     # selecting profile
-    profiles = adata.varm[profile_field].copy()
+    is_anndata = isinstance(adata, AnnData)
+
+    if is_anndata :
+        profiles = adata.varm[profile_field].copy()
+    
+    elif adata.ndim > 1 : 
+        profiles = adata
 
     if profiles.empty : 
         raise(ValueError('please provide a valid profile_field or compute profiles first, using computeProfiles'))
@@ -55,11 +57,12 @@ def Signatures(adata,
     # n = len(profiles.columns)
     n_mean = profiles.mean(axis = 1)
     signatures = profiles.sub(n_mean, axis = 0)
+    signatures.columns = signatures.columns.astype('str')
 
-    adata.varm[field_name] = signatures
-    adata.varm[field_name].columns = adata.varm[field_name].columns.astype('str') 
+    if is_anndata :
+        adata.varm[field_name] = signatures
 
-    if return_panda : 
+    if return_panda or (not is_anndata): 
         return(signatures)
 
     return(adata)
