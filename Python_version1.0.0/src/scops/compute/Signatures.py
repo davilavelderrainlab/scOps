@@ -8,7 +8,7 @@ def Signatures(adata,
     profile_field="Profiles",
     field_name='Signatures',
     return_panda=False) :
-    """Computes Signatures from Profiles
+     """Computes Signatures from Profiles
 
     A signature is the summed pair-wise differences of a profile vs all the 
     others. 
@@ -21,9 +21,9 @@ def Signatures(adata,
     adata       
         AnnData object: stores your data 
     profile_field 
-        str"Profile_": field of adata.varm used to store profiles
+        str"Profiles": field of adata.varm used to store profiles
     field_name
-        str='Signature_': name used to store the signature matrix in adata.varm
+        str='Signatures': name used to store the signature matrix in adata.varm
     return_panda
         bool=False: wheter to return the pandas DataFrame of signatures instead 
             of the AnnData object
@@ -45,28 +45,19 @@ def Signatures(adata,
     none
     """
     
-    # selecting profiles
-
-    # deprecated
-    #profiles = GetRepresentation(adata, profile_field)
-
-    profiles = adata.varm[profile_field]
+    # selecting profile
+    profiles = adata.varm[profile_field].copy()
 
     if profiles.empty : 
         raise(ValueError('please provide a valid profile_field or compute profiles first, using computeProfiles'))
 
     # faster way to compute signatures 
-    #n = len(profiles.columns)
-    n_mean = profiles.mean(axis = 1) #* n #TODO test 
+    # n = len(profiles.columns)
+    n_mean = profiles.mean(axis = 1)
     signatures = profiles.sub(n_mean, axis = 0)
-    # splitting by groups 
-    signature_groups = [col_name.split(profile_field)[-1] for col_name in signatures.columns]
-    signatures.columns = signature_groups
-
-    # deprecated 
-    #adata = _panda_in_var_(adata, signatures, field_name = field_name, group_names = group_names)
 
     adata.varm[field_name] = signatures
+    adata.varm[field_name].columns = adata.varm[field_name].columns.astype('str') 
 
     if return_panda : 
         return(signatures)
