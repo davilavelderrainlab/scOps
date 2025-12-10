@@ -1,9 +1,5 @@
-from scops.helper._panda_in_var_ import _panda_in_var_
-from scops.helper.GetRepresentation import GetRepresentation
+from anndata import AnnData
 
-
-# signatures 
-# from profiles 
 def Signatures(adata,
     profile_field="Profiles",
     field_name='Signatures',
@@ -19,11 +15,11 @@ def Signatures(adata,
     Parameters
     ----------
     adata       
-        AnnData object: stores your data 
+        AnnData object: stores your data or a matrix of Profiles
     profile_field 
-        str"Profile_": field of adata.varm used to store profiles
+        str"Profiles": field of adata.varm used to store profiles
     field_name
-        str='Signature_': name used to store the signature matrix in adata.varm
+        str='Signatures': name used to store the signature matrix in adata.varm
     return_panda
         bool=False: wheter to return the pandas DataFrame of signatures instead 
             of the AnnData object
@@ -45,30 +41,28 @@ def Signatures(adata,
     none
     """
     
-    # selecting profiles
+    # selecting profile
+    is_anndata = isinstance(adata, AnnData)
 
-    # deprecated
-    #profiles = GetRepresentation(adata, profile_field)
-
-    profiles = adata.varm[profile_field]
+    if is_anndata :
+        profiles = adata.varm[profile_field].copy()
+    
+    elif adata.ndim > 1 : 
+        profiles = adata
 
     if profiles.empty : 
         raise(ValueError('please provide a valid profile_field or compute profiles first, using computeProfiles'))
 
     # faster way to compute signatures 
-    #n = len(profiles.columns)
-    n_mean = profiles.mean(axis = 1) #* n #TODO test 
+    # n = len(profiles.columns)
+    n_mean = profiles.mean(axis = 1)
     signatures = profiles.sub(n_mean, axis = 0)
-    # splitting by groups 
-    signature_groups = [col_name.split(profile_field)[-1] for col_name in signatures.columns]
-    signatures.columns = signature_groups
+    signatures.columns = signatures.columns.astype('str')
 
-    # deprecated 
-    #adata = _panda_in_var_(adata, signatures, field_name = field_name, group_names = group_names)
+    if is_anndata :
+        adata.varm[field_name] = signatures
 
-    adata.varm[field_name] = signatures
-
-    if return_panda : 
+    if return_panda or (not is_anndata): 
         return(signatures)
 
     return(adata)

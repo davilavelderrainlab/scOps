@@ -1,8 +1,8 @@
 #' Compute signatures
 #'
-#' @param sce The SingleCellExperiment object
+#' @param sce The SingleCellExperiment object or a matrix
 #' @param profile_attr The rowData attribute in which the expression profiles are
-#' saved. Defaults to 'P'.
+#' saved. Defaults to 'P'. Ignored if a matrix is passed. 
 #'
 #' @return The SCE with the signatures (a matrix genes by groups with the
 #' signature values) saved in rowData under 'S'.
@@ -23,13 +23,30 @@
 computeSignatures <- function (sce,
                                profile_attr = 'P') {
 
-        profiles <- SummarizedExperiment::rowData(sce)[,profile_attr]
+        # check for SCE or matrix 
+        if(!is(sce, 'SingleCellExperiment')){
+            profiles <- sce
+            matrix_flag <- TRUE
+            #TODO ADD A CHECK FOR MATRIX CLASS 
+        } else {
+            profiles <- SummarizedExperiment::rowData(sce)[,profile_attr]
+            matrix_flag <- FALSE
+        }
+    
+        # compute signatures as : sample profile - mean profile 
         if (is.null(colnames(profiles))) {
             colnames(profiles) <- paste0("Column-", seq_len(dim(profiles)[2]))
         }
         out <- profiles - Matrix::rowMeans(profiles)
         colnames(out) <- colnames(profiles)
-        SummarizedExperiment::rowData(sce)$S <- out
+        
+        # handle matrix output 
+        if (matrix_flag){
+            sce <- out
+        }
+        else {
+            SummarizedExperiment::rowData(sce)$S <- out
+        }
         return(sce)
 
 }
